@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 import pandas as pd
-import kmeans.c
+import mykmeanssp
 
 # define PY_SSIZE_T_CLEAN
 # include <Python.h>
@@ -80,11 +80,12 @@ def print_centrals(list_of_clusters):
 def main():
     k, max_iter = validate_and_assign_input_user()
     list_of_vectors = build_panda()
+    amount_of_vectors = len(list_of_vectors)
     list_of_clusters, index_of_clusters = choose_random_centrals(list_of_vectors, k)  # returns a list of clusters and prints the index of the selected k centroids
     dimensions = len(list_of_vectors.columns)
     list_of_clusters_array = list_of_clusters.to_numpy()
     my_file = np.savetxt('text_for_c.txt' ,list_of_vectors.values, fmt='%.4f') # creates text from our vectors pandas
-    list_of_final_clusters = fit(my_file, index_of_clusters, k, dimensions)
+    list_of_final_clusters = fit(k, max_iter, my_file , index_of_clusters, dimensions, amount_of_vectors)
     print_centrals(list_of_final_clusters)
 
 

@@ -57,13 +57,16 @@ def merge_pandas(df, other):
     return df
 
 
+# receives the vectors pandas and amount of k clusters and builds a list of clusters
+# returns a list of clusters
 def choose_random_centrals(vectors, k):
-    np.random.seed(593)
-    clusters_indexes = np.random.randint(0, len(vectors.index), k)
+    np.random.seed(0)
+    clusters_indexes = np.random.choice(len(vectors.index), k, replace=False)
+    print(clusters_indexes)
     clusters_list = []
     for x in clusters_indexes:
         clusters_list.append(vectors.iloc[x,])
-    return clusters_list
+    return clusters_list, clusters_indexes
 
 
 # prints new central after adjusting for the relevant structure
@@ -77,11 +80,11 @@ def print_centrals(list_of_clusters):
 def main():
     k, max_iter = validate_and_assign_input_user()
     list_of_vectors = build_panda()
-    list_of_clusters = choose_random_centrals(list_of_vectors, k)
-    dimensions = len(list_of_vectors.columns)  # vectors have extra dimension to hold their cluster allocation
+    list_of_clusters, index_of_clusters = choose_random_centrals(list_of_vectors, k)  # returns a list of clusters and prints the index of the selected k centroids
+    dimensions = len(list_of_vectors.columns)
     list_of_clusters_array = list_of_clusters.to_numpy()
-    print_centrals(list_of_clusters_array)
-    list_of_final_clusters = fit(list_of_vectors, list_of_clusters, k, dimensions)
+    my_file = np.savetxt('text_for_c.txt' ,list_of_vectors.values, fmt='%.4f') # creates text from our vectors pandas
+    list_of_final_clusters = fit(my_file, index_of_clusters, k, dimensions)
     print_centrals(list_of_final_clusters)
 
 

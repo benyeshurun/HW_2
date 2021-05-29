@@ -28,32 +28,16 @@ def validate_and_assign_input_user():
 def build_panda():
     try:
         if len(sys.argv) > 4:
-            pd_1 = pd.read_csv(sys.argv[3])
-            pd_2 = pd.read_csv(sys.argv[4])
+            pd_1 = pd.read_csv(sys.argv[3], header=None)
+            pd_2 = pd.read_csv(sys.argv[4], header=None)
         else:
-            pd_1 = pd.read_csv(sys.argv[2])
-            pd_2 = pd.read_csv(sys.argv[3])
+            pd_1 = pd.read_csv(sys.argv[2], header=None)
+            pd_2 = pd.read_csv(sys.argv[3], header=None)
     except FileNotFoundError:
         print("File not accessible")
-        return merge_pandas(pd_1, pd_2)
-
-
-def merge_pandas(df, other):
-    a = []
-    b = []
-    for i in range(len(df.columns)):
-        a.append(float(list(df)[i]))
-        # for i in range(len(pd_2.columns)):
-        b.append(float(list(other)[i]))
-    df.loc[-1] = a  # adding a row
-    df.index = df.index + 1  # shifting index
-    df = df.sort_index()
-    other.loc[-1] = a  # adding a row
-    other.index = other.index + 1  # shifting index
-    other = other.sort_index()
-    df.rename(columns={list(df)[0]: 'x'}, inplace=True)  # renaming both first columns for the merge
-    other.rename(columns={list(other)[0]: 'x'}, inplace=True)
-    df = pd.merge(df, other, how='inner', on='x')
+    pd_1.rename(columns={list(pd_1)[0]: 'x'}, inplace=True)  # renaming both first columns for the merge
+    pd_2.rename(columns={list(pd_2)[0]: 'x'}, inplace=True)
+    df = pd.merge(pd_1, pd_2, how='inner', on='x')
     return df
 
 
@@ -81,11 +65,12 @@ def main():
     k, max_iter = validate_and_assign_input_user()
     list_of_vectors = build_panda()
     amount_of_vectors = len(list_of_vectors)
-    list_of_clusters, index_of_clusters = choose_random_centrals(list_of_vectors, k)  # returns a list of clusters and prints the index of the selected k centroids
+    list_of_clusters, index_of_clusters = choose_random_centrals(list_of_vectors,
+                                                                 k)  # returns a list of clusters and prints the index of the selected k centroids
     dimensions = len(list_of_vectors.columns)
     list_of_clusters_array = list_of_clusters.to_numpy()
-    my_file = np.savetxt('text_for_c.txt' ,list_of_vectors.values, fmt='%.4f') # creates text from our vectors pandas
-    list_of_final_clusters = fit(k, max_iter, my_file , index_of_clusters, dimensions, amount_of_vectors)
+    my_file = np.savetxt('text_for_c.txt', list_of_vectors.values, fmt='%.4f')  # creates text from our vectors pandas
+    list_of_final_clusters = mykmeanssp.fit(k, max_iter, my_file, index_of_clusters, dimensions, amount_of_vectors)
     print_centrals(list_of_final_clusters)
 
 

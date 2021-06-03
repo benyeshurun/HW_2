@@ -38,6 +38,7 @@ def build_panda():
     pd_1.rename(columns={list(pd_1)[0]: 'x'}, inplace=True)  # renaming both first columns for the merge
     pd_2.rename(columns={list(pd_2)[0]: 'x'}, inplace=True)
     df = pd.merge(pd_1, pd_2, how='inner', on='x')
+    df = df.iloc[:, 1::1]
     return df
 
 
